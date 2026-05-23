@@ -5,7 +5,7 @@ import { cachedResponse } from '@/lib/api-helpers';
 export async function GET() {
   try {
     const supabase = await createClient();
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('leads')
       .select('*')
       .order('created_at', { ascending: false });
@@ -36,8 +36,8 @@ export async function PATCH(request: Request) {
 
     // P1 FIX: Fire update + activity log in parallel, not sequentially
     await Promise.all([
-      (supabase as any).from('leads').update({ pipeline_stage: pipelineStage }).eq('id', leadId),
-      (supabase as any).from('lead_activities').insert({
+      supabase.from('leads').update({ pipeline_stage: pipelineStage }).eq('id', leadId),
+      supabase.from('lead_activities').insert({
         lead_id: leadId,
         activity_type: 'pipeline_move',
         description: `Moved to ${pipelineStage}`,
@@ -45,7 +45,7 @@ export async function PATCH(request: Request) {
       }),
     ]);
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('leads')
       .select('*')
       .eq('id', leadId)

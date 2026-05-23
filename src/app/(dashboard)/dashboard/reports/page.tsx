@@ -25,18 +25,18 @@ export default function ReportsPage() {
       case '90d': start = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000); break;
       default: start = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
     }
-    return leads.filter((l: any) => new Date(l.createdAt) >= start);
+    return leads.filter((l: Record<string, unknown>) => new Date(l.createdAt) >= start);
   }, [leads, dateRange]);
 
   const filteredLeads = dateFilter();
-  const convertedLeads = filteredLeads.filter((l: any) => l.status === 'Converted');
-  const totalValue = filteredLeads.reduce((s: number, l: any) => s + (l.dealValue || 0), 0);
+  const convertedLeads = filteredLeads.filter((l: Record<string, unknown>) => l.status === 'Converted');
+  const totalValue = filteredLeads.reduce((s: number, l: Record<string, unknown>) => s + (l.dealValue || 0), 0);
 
   const exportToCSV = useCallback(async () => {
     setExporting(true);
     try {
       const headers = ['Name', 'Phone', 'Marble Type', 'Quantity', 'Status', 'Deal Value', 'Agent', 'Created'];
-      const rows = filteredLeads.map((l: any) => [
+      const rows = filteredLeads.map((l: Record<string, unknown>) => [
         l.name,
         l.phone,
         l.marbleType || '',
@@ -79,7 +79,7 @@ export default function ReportsPage() {
       doc.text(`Report: ${selectedReport.toUpperCase()}`, 14, 28);
       doc.text(`Generated: ${new Date().toLocaleDateString('en-IN')}`, 14, 34);
 
-      const tableData = filteredLeads.map((l: any) => [
+      const tableData = filteredLeads.map((l: Record<string, unknown>) => [
         l.name,
         l.phone,
         l.marbleType || '',
@@ -88,7 +88,7 @@ export default function ReportsPage() {
         `₹${(l.dealValue || 0).toLocaleString('en-IN')}`,
       ]);
 
-      (doc as any).autoTable({
+      (doc).autoTable({
         startY: 42,
         head: [['Name', 'Phone', 'Marble', 'Qty', 'Status', 'Value']],
         body: tableData,
@@ -207,7 +207,7 @@ export default function ReportsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {filteredLeads.map((lead: any, i: number) => (
+                {filteredLeads.map((lead: Record<string, unknown>, i: number) => (
                   <tr key={i} className="hover:bg-muted/50">
                     <td className="px-4 py-3 font-medium">{lead.name}</td>
                     <td className="px-4 py-3 text-muted-foreground">{lead.phone}</td>

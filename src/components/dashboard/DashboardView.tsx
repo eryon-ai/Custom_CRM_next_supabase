@@ -11,8 +11,8 @@ import { useDashboardStatsQuery } from '@/hooks/use-queries';
 const LeadStatusChart = dynamic(() => import('./LeadStatusChart').then((m) => m.LeadStatusChart), { ssr: false });
 
 interface DashboardViewProps {
-  leads: any[];
-  agents: any[];
+  leads: unknown[];
+  agents: unknown[];
 }
 
 export const DashboardView = memo(function DashboardView({ leads, agents }: DashboardViewProps) {

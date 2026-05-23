@@ -48,7 +48,7 @@ export async function GET(request: Request) {
     const supabase = await createClient();
 
     // Count query
-    let countQuery = (supabase as any)
+    let countQuery = supabase
       .from('slabs')
       .select('*', { count: 'exact', head: true });
 
@@ -65,7 +65,7 @@ export async function GET(request: Request) {
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    let dataQuery = (supabase as any)
+    let dataQuery = supabase
       .from('slabs')
       .select('*')
       .order('created_at', { ascending: false })
@@ -113,7 +113,7 @@ export async function POST(request: Request) {
 
     // Generate slab code
     const year = new Date().getFullYear().toString();
-    const { count: slabCount } = await (supabase as any)
+    const { count: slabCount } = await supabase
       .from('slabs')
       .select('*', { count: 'exact', head: true })
       .gte('created_at', `${year}-01-01`);
@@ -141,7 +141,7 @@ export async function POST(request: Request) {
       notes: body.notes ? String(body.notes).trim() : null,
     };
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('slabs')
       .insert(payload)
       .select('*')
@@ -177,7 +177,7 @@ export async function PATCH(request: Request) {
         return NextResponse.json({ error: 'leadId required for reservation' }, { status: 400 });
       }
       // P0 FIX: Atomic reservation — only update if currently Available
-      const { data: slab, error: slabErr } = await (supabase as any)
+      const { data: slab, error: slabErr } = await supabase
         .from('slabs')
         .update({
           status: 'Reserved',
@@ -195,7 +195,7 @@ export async function PATCH(request: Request) {
       }
 
       // Create reservation record
-      await (supabase as any).from('slab_reservations').insert({
+      await supabase.from('slab_reservations').insert({
         slab_id: id,
         lead_id: body.leadId,
         reserved_by: body.userId || null,
@@ -210,7 +210,7 @@ export async function PATCH(request: Request) {
       dbUpdates.reserved_at = null;
 
       // Update reservation record
-      await (supabase as any)
+      await supabase
         .from('slab_reservations')
         .update({ status: 'Released' })
         .eq('slab_id', id)
@@ -220,7 +220,7 @@ export async function PATCH(request: Request) {
       dbUpdates.sold_at = new Date().toISOString();
 
       // Update reservation to Converted
-      await (supabase as any)
+      await supabase
         .from('slab_reservations')
         .update({ status: 'Converted' })
         .eq('slab_id', id)
@@ -240,7 +240,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
     }
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('slabs')
       .update(dbUpdates)
       .eq('id', id)
@@ -268,7 +268,7 @@ export async function DELETE(request: Request) {
     }
 
     const supabase = await createClient();
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('slabs')
       .delete()
       .eq('id', id);

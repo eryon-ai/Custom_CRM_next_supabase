@@ -35,7 +35,7 @@ function mapLead(row: Record<string, unknown>) {
 export async function GET() {
   try {
     const supabase = await createClient();
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('leads')
       .select('id, name, phone, email, company, contact_person, marble_type, quantity, site_location, city, state, pincode, status, pipeline_stage, deal_value, probability, lead_score, lead_source, assigned_to, created_by, notes, follow_up_at, last_contacted_at, created_at, updated_at')
       .order('created_at', { ascending: false });
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
     };
 
     const supabase = await createClient();
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('leads')
       .insert(payload)
       .select('*')

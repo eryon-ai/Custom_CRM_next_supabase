@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface LocationsViewProps {
-  locations: any[];
+  locations: unknown[];
   error?: string | null;
 }
 
@@ -32,7 +32,7 @@ export const LocationsView = memo(function LocationsView({ locations, error }: L
             </p>
             {locations.length > 0 && (
               <div className="mt-4 space-y-2 text-left max-w-sm">
-                {locations.slice(0, 3).map((loc: any) => (
+                {locations.slice(0, 3).map((loc: Record<string, unknown>) => (
                   <div key={loc.id} className="flex items-center gap-2 p-2 rounded-lg bg-background/80 text-xs">
                     <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
                     <span className="font-medium">{loc.agentName}</span>
@@ -52,7 +52,7 @@ export const LocationsView = memo(function LocationsView({ locations, error }: L
           <ScrollArea className="flex-1">
             <CardContent className="p-2">
               <div className="space-y-1">
-                {locations.map((loc: any) => (
+                {locations.map((loc: Record<string, unknown>) => (
                   <div key={loc.id} className="p-3 rounded-lg hover:bg-muted/50 transition-colors">
                     <div className="flex justify-between items-start mb-1">
                       <p className="text-sm font-medium text-foreground">{loc.agentName}</p>

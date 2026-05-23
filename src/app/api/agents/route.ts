@@ -7,7 +7,7 @@ export async function GET() {
     const supabase = await createClient();
 
     // P0 FIX: Use single aggregated query instead of fetching all leads + client-side count
-    const { data: agents, error: agentsError } = await (supabase as any)
+    const { data: agents, error: agentsError } = await supabase
       .from('agents')
       .select('*, leads!leads_assigned_to_fkey(count)')
       .order('created_at', { ascending: false });
@@ -16,36 +16,36 @@ export async function GET() {
       // Fallback: original two-query approach if join fails
       const [{ data: agentsFb, error: aErr }, { data: leadCounts, error: cErr }] =
         await Promise.all([
-          (supabase as any).from('agents').select('*').order('created_at', { ascending: false }),
-          (supabase as any).from('leads').select('assigned_to'),
+          supabase.from('agents').select('*').order('created_at', { ascending: false }),
+          supabase.from('leads').select('assigned_to'),
         ]);
       if (aErr) throw aErr;
       if (cErr) throw cErr;
       const byAgent: Record<string, number> = (leadCounts || []).reduce(
-        (acc: Record<string, number>, row: any) => {
+        (acc: Record<string, number>, row: Record<string, unknown>) => {
           if (!row.assigned_to) return acc;
-          acc[row.assigned_to] = (acc[row.assigned_to] || 0) + 1;
+          acc[row.assigned_to as string] = (acc[row.assigned_to as string] || 0) + 1;
           return acc;
         }, {});
-      const mapped = (agentsFb || []).map((a: any) => ({
+      const mapped = (agentsFb || []).map((a: Record<string, unknown>) => ({
         id: a.id, name: a.name, email: a.email || '', phone: a.phone || '',
         status: a.status || 'Offline',
-        lastActive: a.last_active_at ? new Date(a.last_active_at).toLocaleString() : 'No activity',
-        totalLeads: byAgent[a.id] || 0,
+        lastActive: a.last_active_at ? new Date(a.last_active_at as string).toLocaleString() : 'No activity',
+        totalLeads: byAgent[a.id as string] || 0,
       }));
       return cachedResponse({ agents: mapped });
     }
 
-    const mapped = (agents || []).map((a: any) => ({
+    const mapped = (agents || []).map((a: Record<string, unknown>) => ({
       id: a.id,
       name: a.name,
       email: a.email || '',
       phone: a.phone || '',
       status: a.status || 'Offline',
       lastActive: a.last_active_at
-        ? new Date(a.last_active_at).toLocaleString()
+        ? new Date(a.last_active_at as string).toLocaleString()
         : 'No activity',
-      totalLeads: a.leads?.[0]?.count || 0,
+      totalLeads: (a.leads as Record<string, unknown>[])?.[0]?.count || 0,
     }));
 
     return cachedResponse({ agents: mapped });
@@ -73,7 +73,7 @@ export async function POST(request: Request) {
     };
 
     const supabase = await createClient();
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('agents')
       .insert(payload)
       .select('*')

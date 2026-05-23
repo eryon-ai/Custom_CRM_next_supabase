@@ -43,7 +43,7 @@ export async function GET(request: Request) {
     const status = searchParams.get('status');
 
     const supabase = await createClient();
-    let query = (supabase as any)
+    let query = supabase
       .from('quotations')
       .select('*')
       .order('created_at', { ascending: false });
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
     const quotationNumber = generateQuotationNumber();
     const gstRate = body.gstRate ?? 18;
     const subtotal = body.items.reduce(
-      (sum: number, item: any) => sum + (item.total ?? item.quantity * item.unitPrice),
+      (sum: number, item: Record<string, unknown>) => sum + (item.total ?? item.quantity * item.unitPrice),
       0
     );
     const gstAmount = Math.round(subtotal * gstRate) / 100;
@@ -109,7 +109,7 @@ export async function POST(request: Request) {
     };
 
     const supabase = await createClient();
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('quotations')
       .insert(payload)
       .select('*')
@@ -152,7 +152,7 @@ export async function PATCH(request: Request) {
       dbUpdates.items = updates.items;
       const gstRate = (dbUpdates.gst_rate as number) ?? (updates.gstRate ?? 18);
       const subtotal = updates.items.reduce(
-        (sum: number, item: any) => sum + (item.total ?? item.quantity * item.unitPrice),
+        (sum: number, item: Record<string, unknown>) => sum + (item.total ?? item.quantity * item.unitPrice),
         0
       );
       dbUpdates.subtotal = subtotal;
@@ -166,7 +166,7 @@ export async function PATCH(request: Request) {
     }
 
     const supabase = await createClient();
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('quotations')
       .update(dbUpdates)
       .eq('id', id)
@@ -195,7 +195,7 @@ export async function DELETE(request: Request) {
     }
 
     const supabase = await createClient();
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('quotations')
       .delete()
       .eq('id', id);

@@ -14,23 +14,23 @@ export async function GET() {
     // Run all aggregations in parallel
     const [leadsRes, agentsRes, inventoryRes, activitiesRes] = await Promise.all([
       // Lead stats by status
-      (supabase as any)
+      supabase
         .from('leads')
         .select('id, status, deal_value', { count: 'exact', head: false }),
 
       // Agent count
-      (supabase as any)
+      supabase
         .from('agents')
         .select('id, status', { count: 'exact', head: false }),
 
       // Low stock inventory
-      (supabase as any)
+      supabase
         .from('inventory_items')
         .select('id, name, quantity_available, min_stock_level, unit, unit_price')
         .filter('status', 'neq', 'Discontinued'),
 
       // Recent activities (last 20)
-      (supabase as any)
+      supabase
         .from('lead_activities')
         .select('*, leads(name)')
         .order('created_at', { ascending: false })
@@ -45,10 +45,10 @@ export async function GET() {
     let lostDeals = 0;
     let wonDeals = 0;
 
-    allLeads.forEach((lead: any) => {
-      const status = lead.status || 'Unknown';
+    allLeads.forEach((lead: Record<string, unknown>) => {
+      const status = (lead.status as string) || 'Unknown';
       byStatus[status] = (byStatus[status] || 0) + 1;
-      totalPipelineValue += lead.deal_value || 0;
+      totalPipelineValue += (lead.deal_value as number) || 0;
       if (status === 'Converted') wonDeals++;
       if (status === 'Lost') lostDeals++;
     });
@@ -58,29 +58,29 @@ export async function GET() {
 
     // ── Process Agents ──
     const allAgents = agentsRes.data || [];
-    const activeAgents = allAgents.filter((a: any) => a.status === 'Active').length;
+    const activeAgents = allAgents.filter((a: Record<string, unknown>) => a.status === 'Active').length;
 
     // ── Process Inventory ──
     const allInventory = inventoryRes.data || [];
     const lowStockItems = allInventory.filter(
-      (i: any) => i.quantity_available <= i.min_stock_level && i.quantity_available > 0
+      (i: Record<string, unknown>) => (i.quantity_available as number) <= (i.min_stock_level as number) && (i.quantity_available as number) > 0
     );
     const outOfStockItems = allInventory.filter(
-      (i: any) => i.quantity_available === 0 || i.quantity_available <= 0
+      (i: Record<string, unknown>) => (i.quantity_available as number) === 0 || (i.quantity_available as number) <= 0
     );
     const inventoryValue = allInventory.reduce(
-      (sum: number, i: any) => sum + (i.quantity_available || 0) * (i.unit_price || 0),
+      (sum: number, i: Record<string, unknown>) => sum + ((i.quantity_available as number) || 0) * ((i.unit_price as number) || 0),
       0
     );
 
     // ── Process Activities ──
-    const recentActivities = (activitiesRes.data || []).map((a: any) => ({
-      id: a.id,
-      leadId: a.lead_id,
-      leadName: a.leads?.name || 'Unknown',
-      type: a.activity_type,
-      description: a.description,
-      createdAt: a.created_at,
+    const recentActivities = (activitiesRes.data || []).map((a: Record<string, unknown>) => ({
+      id: a.id as string,
+      leadId: a.lead_id as string,
+      leadName: ((a.leads as Record<string, unknown>)?.name as string) || 'Unknown',
+      type: a.activity_type as string,
+      description: a.description as string,
+      createdAt: a.created_at as string,
     }));
 
     // ── Lead Status Distribution ──
@@ -92,8 +92,8 @@ export async function GET() {
 
     // ── Pipeline Stage Distribution ──
     const byStage: Record<string, number> = {};
-    allLeads.forEach((lead: any) => {
-      const stage = lead.pipeline_stage || lead.status || 'Unknown';
+    allLeads.forEach((lead: Record<string, unknown>) => {
+      const stage = (lead.pipeline_stage as string) || (lead.status as string) || 'Unknown';
       byStage[stage] = (byStage[stage] || 0) + 1;
     });
     const stageDistribution = Object.entries(byStage).map(([stage, count]) => ({

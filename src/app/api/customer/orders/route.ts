@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     }
 
     // Find leads by phone
-    const { data: leads } = await (supabase as any)
+    const { data: leads } = await supabase
       .from('leads')
       .select('id, name, status, pipeline_stage, created_at')
       .ilike('phone', `%${customerPhone.replace(/[^0-9]/g, '')}%`)
@@ -34,31 +34,31 @@ export async function GET(request: Request) {
       });
     }
 
-    const leadIds = leads.map((l: any) => l.id);
+    const leadIds = leads.map((l: Record<string, unknown>) => l.id as string);
 
     // Get quotations
-    const { data: quotations } = await (supabase as any)
+    const { data: quotations } = await supabase
       .from('quotations')
       .select('*')
       .in('lead_id', leadIds)
       .order('created_at', { ascending: false });
 
     // Get invoices
-    const { data: invoices } = await (supabase as any)
+    const { data: invoices } = await supabase
       .from('invoices')
       .select('*')
       .in('lead_id', leadIds)
       .order('created_at', { ascending: false });
 
     // Get reserved slabs
-    const { data: slabs } = await (supabase as any)
+    const { data: slabs } = await supabase
       .from('slabs')
       .select('*')
       .in('reserved_for_lead', leadIds)
       .eq('status', 'Reserved');
 
     // Get site visits
-    const { data: visits } = await (supabase as any)
+    const { data: visits } = await supabase
       .from('site_visits')
       .select('*')
       .in('lead_id', leadIds)
@@ -66,12 +66,12 @@ export async function GET(request: Request) {
       .limit(5);
 
     return cachedResponse({
-      leads: leads.map((l: any) => ({
-        id: l.id,
-        name: l.name,
-        status: l.status,
-        pipelineStage: l.pipeline_stage,
-        createdAt: l.created_at,
+      leads: leads.map((l: Record<string, unknown>) => ({
+        id: l.id as string,
+        name: l.name as string,
+        status: l.status as string,
+        pipelineStage: l.pipeline_stage as string,
+        createdAt: l.created_at as string,
       })),
       quotations: quotations || [],
       invoices: invoices || [],
@@ -79,10 +79,10 @@ export async function GET(request: Request) {
       upcomingVisits: visits || [],
       summary: {
         totalOrders: leads.length,
-        activeOrders: leads.filter((l: any) => !['Converted', 'Lost'].includes(l.status)).length,
-        totalValue: (invoices || []).reduce((s: number, i: any) => s + (i.total_amount || 0), 0),
-        totalPaid: (invoices || []).reduce((s: number, i: any) => s + (i.amount_paid || 0), 0),
-        pendingBalance: (invoices || []).reduce((s: number, i: any) => s + ((i.total_amount || 0) - (i.amount_paid || 0)), 0),
+        activeOrders: leads.filter((l: Record<string, unknown>) => !['Converted', 'Lost'].includes(l.status as string)).length,
+        totalValue: (invoices || []).reduce((s: number, i: Record<string, unknown>) => s + ((i.total_amount as number) || 0), 0),
+        totalPaid: (invoices || []).reduce((s: number, i: Record<string, unknown>) => s + ((i.amount_paid as number) || 0), 0),
+        pendingBalance: (invoices || []).reduce((s: number, i: Record<string, unknown>) => s + (((i.total_amount as number) || 0) - ((i.amount_paid as number) || 0)), 0),
       },
     });
   } catch (error) {

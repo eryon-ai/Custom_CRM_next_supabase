@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     const quotationId = searchParams.get('quotationId');
 
     const supabase = await createClient();
-    let query = (supabase as any)
+    let query = supabase
       .from('invoices')
       .select('*')
       .order('created_at', { ascending: false });
@@ -77,15 +77,15 @@ export async function POST(request: Request) {
     const isInterstate = customerState !== businessState;
 
     // Calculate items with HSN codes
-    const itemsWithHsn = body.items.map((item: any) => ({
+    const itemsWithHsn = body.items.map((item: Record<string, unknown>) => ({
       ...item,
-      hsn_code: item.hsn_code || gstInfo.hsnCode,
-      gst_rate: item.gst_rate || gstInfo.gstRate,
+      hsn_code: (item.hsn_code as string) || gstInfo.hsnCode,
+      gst_rate: (item.gst_rate as number) || gstInfo.gstRate,
     }));
 
     // Calculate totals
     const subtotal = itemsWithHsn.reduce(
-      (sum: number, item: any) => sum + (item.total || (item.quantity || 0) * (item.unitPrice || item.unit_price || 0)),
+      (sum: number, item: Record<string, unknown>) => sum + ((item.total as number) || ((item.quantity as number) || 0) * ((item.unitPrice as number) || (item.unit_price as number) || 0)),
       0
     );
 
@@ -108,7 +108,7 @@ export async function POST(request: Request) {
     };
 
     const supabase = await createClient();
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('invoices')
       .insert(payload)
       .select('*')
@@ -118,7 +118,7 @@ export async function POST(request: Request) {
 
     // If from a quotation, update quotation status
     if (body.quotationId) {
-      await (supabase as any)
+      await supabase
         .from('quotations')
         .update({ status: 'Converted' })
         .eq('id', body.quotationId);
@@ -156,7 +156,7 @@ export async function PATCH(request: Request) {
 
     if (action === 'record_payment' && amount) {
       // Get current invoice
-      const { data: invoice } = await (supabase as any)
+      const { data: invoice } = await supabase
         .from('invoices')
         .select('amount_paid, total_amount')
         .eq('id', id)
@@ -174,7 +174,7 @@ export async function PATCH(request: Request) {
       if (balanceDue <= 0) newStatus = 'Paid';
       else if (newAmountPaid <= 0) newStatus = 'Unpaid';
 
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('invoices')
         .update({
           amount_paid: newAmountPaid,
@@ -201,7 +201,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
     }
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('invoices')
       .update(dbUpdates)
       .eq('id', id)
@@ -229,7 +229,7 @@ export async function DELETE(request: Request) {
     }
 
     const supabase = await createClient();
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('invoices')
       .delete()
       .eq('id', id);

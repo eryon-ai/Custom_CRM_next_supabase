@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     const status = searchParams.get('status');
 
     const supabase = await createClient();
-    let query = (supabase as any)
+    let query = supabase
       .from('site_visits')
       .select('*, leads(id, name, phone), agents(id, name)')
       .order('scheduled_at', { ascending: true });
@@ -23,23 +23,23 @@ export async function GET(request: Request) {
     const { data, error } = await query;
     if (error) throw error;
 
-    const visits = (data || []).map((row: any) => ({
-      id: row.id,
-      leadId: row.lead_id,
-      leadName: row.leads?.name || '',
-      leadPhone: row.leads?.phone || '',
-      agentId: row.agent_id,
-      agentName: row.agents?.name || '',
-      scheduledAt: row.scheduled_at,
-      actualAt: row.actual_at,
-      status: row.status,
-      outcome: row.outcome,
-      notes: row.notes,
-      photos: row.photos || [],
-      latitude: row.latitude,
-      longitude: row.longitude,
-      address: row.address,
-      createdAt: row.created_at,
+    const visits = (data || []).map((row: Record<string, unknown>) => ({
+      id: row.id as string,
+      leadId: row.lead_id as string,
+      leadName: (row.leads as Record<string, unknown>)?.name as string || '',
+      leadPhone: (row.leads as Record<string, unknown>)?.phone as string || '',
+      agentId: row.agent_id as string,
+      agentName: (row.agents as Record<string, unknown>)?.name as string || '',
+      scheduledAt: row.scheduled_at as string,
+      actualAt: row.actual_at as string,
+      status: row.status as string,
+      outcome: row.outcome as string,
+      notes: row.notes as string,
+      photos: (row.photos as string[]) || [],
+      latitude: row.latitude as number,
+      longitude: row.longitude as number,
+      address: row.address as string,
+      createdAt: row.created_at as string,
     }));
 
     return cachedResponse({ visits });
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
 
     // If agent not specified, try to get from user profile
     if (!agentId && user) {
-      const { data: profile } = await (supabase as any)
+      const { data: profile } = await supabase
         .from('user_profiles')
         .select('agent_id')
         .eq('id', user.id)
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
       status: 'Scheduled',
     };
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('site_visits')
       .insert(payload)
       .select('*')
@@ -95,7 +95,7 @@ export async function POST(request: Request) {
     if (error) throw error;
 
     // Log activity on the lead
-    await (supabase as any).from('lead_activities').insert({
+    await supabase.from('lead_activities').insert({
       lead_id: body.leadId,
       activity_type: 'site_visit_scheduled',
       description: `Site visit scheduled for ${new Date(body.scheduledAt).toLocaleString('en-IN')}`,
@@ -148,7 +148,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
     }
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('site_visits')
       .update(dbUpdates)
       .eq('id', id)

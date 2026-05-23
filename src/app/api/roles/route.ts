@@ -24,7 +24,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Upsert into user_profiles
-    const { error: profileErr } = await (supabase as any)
+    const { error: profileErr } = await supabase
       .from('user_profiles')
       .upsert({
         id: userId,
@@ -39,7 +39,7 @@ export async function PATCH(request: NextRequest) {
 
     // Touch agent record's updated_at if agentId provided
     if (agentId) {
-      await (supabase as any)
+      await supabase
         .from('agents')
         .update({ updated_at: new Date().toISOString() })
         .eq('id', agentId);

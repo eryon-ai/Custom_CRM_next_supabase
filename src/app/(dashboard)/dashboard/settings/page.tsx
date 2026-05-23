@@ -21,7 +21,7 @@ export default function SettingsPage() {
   const agents = data?.agents || [];
 
   // Map agents to users for display (in production, fetch from auth.users)
-  const users: User[] = agents.map((a: any) => ({
+  const users: User[] = agents.map((a: Record<string, unknown>) => ({
     id: a.id,
     name: a.name,
     email: a.email || '',

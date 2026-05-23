@@ -4,7 +4,6 @@
 
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
-import { getGstInfo, calculateGst } from '@/config/gst';
 
 // Branding config — replace with actual company details
 const BRAND = {
@@ -59,8 +58,8 @@ export function generateProfessionalInvoice(data: InvoiceData): jsPDF {
 
   // ── Colors ──
   const primaryColor = [30, 41, 59] as [number, number, number]; // Slate-800
-  const accentColor = [59, 130, 246] as [number, number, number]; // Blue-500
-  const lightGray = [241, 245, 249] as [number, number, number]; // Slate-100
+  const accentColor: [number, number, number] = [59, 130, 246]; // Blue-500
+  const lightGray: [number, number, number] = [241, 245, 249]; // Slate-100
 
   // ── Header Bar ──
   doc.setFillColor(...primaryColor);
@@ -162,7 +161,7 @@ export function generateProfessionalInvoice(data: InvoiceData): jsPDF {
     item.amount.toLocaleString('en-IN'),
   ]);
 
-  (doc as any).autoTable({
+  (doc).autoTable({
     startY: yPos,
     head: tableHeaders,
     body: tableBody,
@@ -231,7 +230,7 @@ export function generateProfessionalInvoice(data: InvoiceData): jsPDF {
     },
   });
 
-  let finalY = (doc as any).lastAutoTable.finalY + 10;
+  let finalY = (doc).lastAutoTable.finalY + 10;
 
   // ── Amount in Words ──
   doc.setFontSize(9);
@@ -314,7 +313,7 @@ function numberToWords(num: number): string {
 }
 
 // ── Convenience: Generate invoice PDF from API data ──
-export function generateInvoicePDF(invoice: any): jsPDF {
+export function generateInvoicePDF(invoice: Record<string, unknown>): jsPDF {
   return generateProfessionalInvoice({
     invoiceNumber: invoice.invoiceNumber || invoice.invoice_number || 'N/A',
     date: new Date(invoice.createdAt || invoice.created_at || Date.now()).toLocaleDateString('en-IN'),
@@ -324,7 +323,7 @@ export function generateInvoicePDF(invoice: any): jsPDF {
     customerEmail: invoice.customerEmail || invoice.customer_email,
     customerAddress: invoice.customerAddress || invoice.customer_address,
     customerGst: invoice.gstNumber || invoice.gst_number,
-    items: (invoice.items || []).map((item: any) => ({
+    items: (invoice.items || []).map((item: Record<string, unknown>) => ({
       description: item.name || item.description || 'Marble Item',
       hsnCode: item.hsn_code || '68022110',
       quantity: item.quantity || 1,
@@ -344,7 +343,7 @@ export function generateInvoicePDF(invoice: any): jsPDF {
 }
 
 // ── Generate quotation PDF ──
-export function generateQuotationPDF(quotation: any): jsPDF {
+export function generateQuotationPDF(quotation: Record<string, unknown>): jsPDF {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 14;
@@ -393,7 +392,7 @@ export function generateQuotationPDF(quotation: any): jsPDF {
   // Items Table
   y = 72;
   const items = quotation.items || [];
-  const tableBody = items.map((item: any, i: number) => [
+  const tableBody = items.map((item: Record<string, unknown>, i: number) => [
     i + 1,
     `${item.name || item.description || 'Marble'} (${item.marble_type || item.marbleType || 'Standard'})`,
     item.quantity || 1,
@@ -402,7 +401,7 @@ export function generateQuotationPDF(quotation: any): jsPDF {
     `₹${(item.total || (item.quantity * (item.unitPrice || item.unit_price || 0))).toLocaleString('en-IN')}`,
   ]);
 
-  (doc as any).autoTable({
+  (doc).autoTable({
     startY: y,
     head: [['#', 'Description', 'Qty', 'Unit', 'Rate', 'Amount']],
     body: tableBody,
@@ -428,7 +427,7 @@ export function generateQuotationPDF(quotation: any): jsPDF {
     ],
   });
 
-  let fy = (doc as any).lastAutoTable.finalY + 12;
+  let fy = (doc).lastAutoTable.finalY + 12;
 
   // Terms
   doc.setFontSize(8);

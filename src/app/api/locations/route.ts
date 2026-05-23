@@ -5,7 +5,7 @@ import { cachedResponse } from '@/lib/api-helpers';
 export async function GET() {
   try {
     const supabase = await createClient();
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('agent_locations')
       .select('id, latitude, longitude, address, recorded_at, agents(id, name)')
       .order('recorded_at', { ascending: false })
@@ -13,10 +13,10 @@ export async function GET() {
 
     if (error) throw error;
 
-    const locations = (data || []).map((row: any) => ({
-      id: row.id,
-      agentId: row.agents?.id || '',
-      agentName: row.agents?.name || 'Unknown Agent',
+    const locations = (data || []).map((row: Record<string, unknown>) => ({
+      id: row.id as string,
+      agentId: (row.agents as Record<string, unknown>)?.id as string || '',
+      agentName: (row.agents as Record<string, unknown>)?.name as string || 'Unknown Agent',
       lat: row.latitude,
       lng: row.longitude,
       timestamp: row.recorded_at
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data: profile } = await (supabase as any)
+    const { data: profile } = await supabase
       .from('user_profiles')
       .select('agent_id')
       .eq('id', user.id)
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
     const agentId = profile?.agent_id || user.id;
 
     // Insert location
-    const { data: loc, error: locError } = await (supabase as any)
+    const { data: loc, error: locError } = await supabase
       .from('agent_locations')
       .insert({
         agent_id: agentId,
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
 
     // If type is checkin/checkout, also log it
     if (type === 'checkin' || type === 'checkout') {
-      await (supabase as any)
+      await supabase
         .from('field_checkins')
         .insert({
           agent_id: agentId,

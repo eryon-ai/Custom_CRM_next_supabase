@@ -24,9 +24,9 @@ const INITIAL_LEAD = {
 };
 
 interface LeadsViewProps {
-  leads: any[];
-  agents: any[];
-  onCreateLead?: (lead: any) => Promise<boolean>;
+  leads: unknown[];
+  agents: unknown[];
+  onCreateLead?: (lead: Record<string, unknown>) => Promise<boolean>;
   onAdvanceStatus?: (id: string, status: string) => void;
   loading?: boolean;
   error?: string | null;
@@ -42,7 +42,7 @@ export const LeadsView = memo(function LeadsView({ leads, agents, onCreateLead, 
   const filteredLeads = useMemo(
     () =>
       leads.filter(
-        (lead: any) =>
+        (lead: Record<string, unknown>) =>
           (lead.name.toLowerCase().includes(searchTerm.toLowerCase()) || lead.phone.includes(searchTerm)) &&
           (filterStatus === 'All' || lead.status === filterStatus)
       ),
@@ -112,7 +112,7 @@ export const LeadsView = memo(function LeadsView({ leads, agents, onCreateLead, 
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {filteredLeads.map((lead: any) => (
+                {filteredLeads.map((lead: Record<string, unknown>) => (
                   <tr key={lead.id} className="hover:bg-muted/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="font-medium">{lead.name}</div>

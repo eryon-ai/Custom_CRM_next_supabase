@@ -16,7 +16,7 @@ import 'leaflet/dist/leaflet.css';
 // Fix default marker icon on client only (avoids SSR window reference)
 if (typeof window !== 'undefined') {
   import('leaflet').then((L) => {
-    delete (L.Icon.Default.prototype as any)._getIconUrl;
+    delete (L.Icon.Default.prototype)._getIconUrl;
     L.Icon.Default.mergeOptions({
       iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
       iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -147,7 +147,7 @@ export default function FieldOpsPage() {
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'agent_locations' },
         (payload) => {
-          const newLoc = payload.new as any;
+          const newLoc = payload.new;
           if (!mounted) return;
           setLocations((prev) => [
             {

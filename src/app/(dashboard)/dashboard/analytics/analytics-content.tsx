@@ -27,7 +27,7 @@ export default function AnalyticsPage() {
   const [view, setView] = useState<'revenue' | 'conversion' | 'agents'>('revenue');
 
   // Type-safe accessors
-  const typedData = data as any;
+  const typedData = data;
   const kpis = typedData?.kpis;
   const monthlyRevenue = typedData?.monthlyRevenue || [];
   const leadSources = typedData?.leadSources || [];
@@ -107,7 +107,7 @@ export default function AnalyticsPage() {
         ].map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setView(tab.id as any)}
+            onClick={() => setView(tab.id)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               view === tab.id
                 ? 'bg-primary text-primary-foreground'
@@ -157,7 +157,7 @@ export default function AnalyticsPage() {
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie data={leadSources} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={4} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                        {leadSources.map((_: any, index: number) => (<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />))}
+                        {leadSources.map( (_: Record<string, unknown>, index: number) => (<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />))}
                       </Pie>
                       <Tooltip />
                     </PieChart>
@@ -179,7 +179,7 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="h-[400px]">
-              {conversionFunnel.some((s: any) => s.count > 0) ? (
+              {conversionFunnel.some((s: Record<string, unknown>) => s.count > 0) ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={conversionFunnel} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
@@ -187,7 +187,7 @@ export default function AnalyticsPage() {
                     <YAxis dataKey="stage" type="category" className="text-xs" width={100} />
                     <Tooltip />
                     <Bar dataKey="count" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={30}>
-                      {conversionFunnel.map((_: any, index: number) => (<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />))}
+                      {conversionFunnel.map( (_: Record<string, unknown>, index: number) => (<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />))}
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
@@ -232,7 +232,7 @@ export default function AnalyticsPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y">
-                      {agentPerformance.map((agent: any) => (
+                      {agentPerformance.map((agent: Record<string, unknown>) => (
                         <tr key={agent.name}>
                           <td className="py-2 font-medium">{agent.name}</td>
                           <td className="py-2 text-right">{agent.leads}</td>

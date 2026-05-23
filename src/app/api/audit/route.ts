@@ -33,7 +33,7 @@ export async function GET(request: Request) {
     const supabase = await createClient();
 
     // Build count query
-    let countQuery = (supabase as any)
+    let countQuery = supabase
       .from('audit_logs')
       .select('*', { count: 'exact', head: true });
 
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    let dataQuery = (supabase as any)
+    let dataQuery = supabase
       .from('audit_logs')
       .select('*')
       .order('created_at', { ascending: false })

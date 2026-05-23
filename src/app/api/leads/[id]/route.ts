@@ -43,7 +43,7 @@ export async function GET(
     }
 
     const supabase = await createClient();
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('leads')
       .select('*')
       .eq('id', id)
@@ -104,7 +104,7 @@ export async function PATCH(
     }
 
     const supabase = await createClient();
-    let updateQuery = (supabase as any).from('leads').update(dbUpdates).eq('id', id);
+    let updateQuery = supabase.from('leads').update(dbUpdates).eq('id', id);
 
     // P1 FIX: Optimistic locking — only update if not modified since client read
     if (body._updatedAt) {
@@ -116,7 +116,7 @@ export async function PATCH(
     if (error) throw error;
 
     // Log the update activity
-    await (supabase as any)
+    await supabase
       .from('lead_activities')
       .insert({
         lead_id: id,
@@ -147,7 +147,7 @@ export async function DELETE(
     }
 
     const supabase = await createClient();
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('leads')
       .delete()
       .eq('id', id);

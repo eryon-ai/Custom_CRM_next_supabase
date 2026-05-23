@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    let query = (supabase as any)
+    let query = supabase
       .from('whatsapp_messages')
       .select('*', { count: 'exact' })
       .order('created_at', { ascending: false })
@@ -148,7 +148,7 @@ export async function POST(request: Request) {
     }
 
     // Always persist the message
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('whatsapp_messages')
       .insert(messagePayload)
       .select('*')

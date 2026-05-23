@@ -2,7 +2,7 @@
 // Razorpay Payment Integration Utility
 // ============================================================
 
-// NOTE: This requires RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in .env.local
+import { createHmac } from 'crypto';
 // Install: npm install razorpay
 
 interface RazorpayOrderOptions {
@@ -72,9 +72,7 @@ export function verifyRazorpaySignature(
   if (!keySecret) return false;
 
   try {
-    const crypto = require('crypto');
-    const expectedSignature = crypto
-      .createHmac('sha256', keySecret)
+    const expectedSignature = createHmac('sha256', keySecret)
       .update(`${orderId}|${paymentId}`)
       .digest('hex');
 

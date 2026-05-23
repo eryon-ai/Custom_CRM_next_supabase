@@ -74,7 +74,7 @@ export default function QuotationsPage() {
   const deleteQuote = useDeleteQuotationMutation();
 
   // Map API response with safe defaults
-  const quotations: Quotation[] = (data?.quotations || []).map((q: any): Quotation => ({
+  const quotations: Quotation[] = (data?.quotations || []).map((q: Record<string, unknown>): Quotation => ({
     id: q.id || '',
     number: q.quotationNumber || '',
     customerName: q.customerName || '',
@@ -103,7 +103,7 @@ export default function QuotationsPage() {
 
   const error = localError || (queryError ? (queryError as Error).message : '');
 
-  const statusFlow: Record<string, { next: string[]; icon: any; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+  const statusFlow: Record<string, { next: string[]; icon: React.ComponentType<{ className?: string }>; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
     Draft: { next: ['Sent'], icon: Send, variant: 'outline' },
     Sent: { next: ['Approved', 'Rejected'], icon: CheckCircle, variant: 'secondary' },
     Approved: { next: ['Converted'], icon: CheckCircle, variant: 'default' },
@@ -207,7 +207,7 @@ export default function QuotationsPage() {
       `₹${(item.total ?? 0).toLocaleString('en-IN')}`,
     ]);
 
-    (doc as any).autoTable({
+    (doc).autoTable({
       startY: quote.discountPercent > 0 ? 82 : 75,
       head: [['#', 'Description', 'Qty', 'Unit', 'Rate', 'Amount']],
       body: tableBody,
@@ -224,7 +224,7 @@ export default function QuotationsPage() {
           { content: '', colSpan: 4 },
           { content: `Discount (${quote.discountPercent}%)`, styles: { fontStyle: 'bold', textColor: [220, 38, 38] } },
           { content: `-₹${quote.discountAmount.toLocaleString('en-IN')}`, styles: { fontStyle: 'bold', textColor: [220, 38, 38] } },
-        ]] as any : []),
+        ]] : []),
         [
           { content: '', colSpan: 4 },
           { content: `GST (${quote.gstRate}%)`, styles: { fontStyle: 'bold' } },
@@ -239,7 +239,7 @@ export default function QuotationsPage() {
     });
 
     // Footer
-    const finalY = (doc as any).lastAutoTable.finalY + 15;
+    const finalY = (doc).lastAutoTable.finalY + 15;
     doc.setFontSize(9);
     doc.text('Terms & Conditions:', 14, finalY);
     doc.setFont('helvetica', 'normal');

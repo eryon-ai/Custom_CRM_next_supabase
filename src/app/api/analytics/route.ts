@@ -39,36 +39,36 @@ export async function GET(request: Request) {
       { data: agents, error: agentsErr },
     ] = await Promise.all([
       // Recent leads in period
-      (supabase as any)
+      supabase
         .from('leads')
         .select('id, status, pipeline_stage, deal_value, created_at, assigned_to, lead_source')
         .gte('created_at', startDateIso)
         .lte('created_at', nowIso)
         .order('created_at', { ascending: false }),
       // All leads for total count
-      (supabase as any)
+      supabase
         .from('leads')
         .select('id, status'),
       // Quotations in period
-      (supabase as any)
+      supabase
         .from('quotations')
         .select('id, status, total_amount, created_at')
         .gte('created_at', startDateIso)
         .lte('created_at', nowIso),
       // Invoices in period
-      (supabase as any)
+      supabase
         .from('invoices')
         .select('id, status, total_amount, amount_paid, created_at')
         .gte('created_at', startDateIso)
         .lte('created_at', nowIso),
       // Activities in period
-      (supabase as any)
+      supabase
         .from('lead_activities')
         .select('id, activity_type, created_at')
         .gte('created_at', startDateIso)
         .lte('created_at', nowIso),
       // All agents
-      (supabase as any)
+      supabase
         .from('agents')
         .select('id, name, status'),
     ]);
@@ -77,21 +77,21 @@ export async function GET(request: Request) {
       throw leadsErr || allLeadsErr || quotErr || invErr || actErr || agentsErr;
     }
 
-    const leadsArr = (leads || []) as any[];
-    const allLeadsArr = (allLeads || []) as any[];
-    const quotationsArr = (quotations || []) as any[];
-    const invoicesArr = (invoices || []) as any[];
-    const activitiesArr = (activities || []) as any[];
-    const agentsArr = (agents || []) as any[];
+    const leadsArr = (leads || []) as Record<string, unknown>[];
+    const allLeadsArr = (allLeads || []) as Record<string, unknown>[];
+    const quotationsArr = (quotations || []) as Record<string, unknown>[];
+    const invoicesArr = (invoices || []) as Record<string, unknown>[];
+    const activitiesArr = (activities || []) as Record<string, unknown>[];
+    const agentsArr = (agents || []) as Record<string, unknown>[];
 
     // --- KPI Cards ---
     const totalLeads = allLeadsArr.length;
-    const convertedLeads = allLeadsArr.filter((l: any) => l.status === 'Converted').length;
+    const convertedLeads = allLeadsArr.filter((l: Record<string, unknown>) => l.status === 'Converted').length;
     const conversionRate = totalLeads > 0 ? Math.round((convertedLeads / totalLeads) * 100) : 0;
-    const activeAgents = agentsArr.filter((a: any) => a.status === 'Active').length;
-    const totalRevenue = invoicesArr.reduce((sum: number, inv: any) => sum + (inv.amount_paid || 0), 0);
+    const activeAgents = agentsArr.filter((a: Record<string, unknown>) => a.status === 'Active').length;
+    const totalRevenue = invoicesArr.reduce((sum: number, inv: Record<string, unknown>) => sum + ((inv.amount_paid as number) || 0), 0);
     const pendingAmount = invoicesArr.reduce(
-      (sum: number, inv: any) => sum + ((inv.total_amount || 0) - (inv.amount_paid || 0)),
+      (sum: number, inv: Record<string, unknown>) => sum + (((inv.total_amount as number) || 0) - ((inv.amount_paid as number) || 0)),
       0
     );
 
@@ -143,7 +143,7 @@ export async function GET(request: Request) {
     const funnelStages = ['New', 'Interested', 'Site Visit', 'Quotation Sent', 'Negotiation', 'Converted'];
     const conversionFunnel = funnelStages.map((stage) => ({
       stage,
-      count: allLeadsArr.filter((l: any) => l.pipeline_stage === stage).length,
+      count: allLeadsArr.filter((l: Record<string, unknown>) => l.pipeline_stage === stage).length,
     }));
 
     // --- Agent Performance ---

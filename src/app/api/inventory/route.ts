@@ -33,7 +33,7 @@ export async function GET(request: Request) {
     const lowStock = searchParams.get('lowStock') === 'true';
     const statusFilter = searchParams.get('status');
 
-    let query = (supabase as any)
+    let query = supabase
       .from('inventory_items')
       .select('*')
       .order('created_at', { ascending: false });
@@ -92,7 +92,7 @@ export async function POST(request: Request) {
     };
 
     const supabase = await createClient();
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('inventory_items')
       .insert(payload)
       .select('*')
@@ -141,7 +141,7 @@ export async function PATCH(request: Request) {
     dbUpdates.updated_at = new Date().toISOString();
 
     const supabase = await createClient();
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('inventory_items')
       .update(dbUpdates)
       .eq('id', id)
@@ -173,7 +173,7 @@ export async function DELETE(request: Request) {
     }
 
     const supabase = await createClient();
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('inventory_items')
       .delete()
       .eq('id', id);

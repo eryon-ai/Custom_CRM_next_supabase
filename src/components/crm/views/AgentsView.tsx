@@ -8,9 +8,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@
 const INITIAL_AGENT = { name: '', email: '', phone: '', status: 'Offline' };
 
 interface AgentsViewProps {
-  agents: any[];
+  agents: unknown[];
   error?: string | null;
-  onCreateAgent?: (agent: any) => Promise<boolean>;
+  onCreateAgent?: (agent: Record<string, unknown>) => Promise<boolean>;
 }
 
 export const AgentsView = memo(function AgentsView({ agents, error, onCreateAgent }: AgentsViewProps) {
@@ -46,7 +46,7 @@ export const AgentsView = memo(function AgentsView({ agents, error, onCreateAgen
       ) : null}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {agents.map((agent: any) => (
+        {agents.map((agent: Record<string, unknown>) => (
           <Card key={agent.id}>
             <CardContent className="p-6">
               <div className="flex justify-between items-start mb-4">

@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Package, Plus, AlertTriangle, Search, Loader2, Trash2, Edit3, TrendingDown, TrendingUp, Warehouse, IndianRupee } from 'lucide-react';
+import { Plus, AlertTriangle, Search, Loader2, Trash2, Edit3 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCurrency } from '@/lib/utils';
@@ -102,9 +101,9 @@ export default function InventoryPage() {
     setSubmitting(true);
     try {
       if (editingId) {
-        await updateItem.mutateAsync({ ...newItem, id: editingId } as any);
+        await updateItem.mutateAsync({ ...newItem, id: editingId });
       } else {
-        await createItem.mutateAsync(newItem as any);
+        await createItem.mutateAsync(newItem);
       }
       setIsModalOpen(false);
       setEditingId(null);

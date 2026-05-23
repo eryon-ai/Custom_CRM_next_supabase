@@ -19,7 +19,7 @@ function mapWorkflowRule(row: Record<string, unknown>) {
 export async function GET() {
   try {
     const supabase = await createClient();
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('workflow_rules')
       .select('*')
       .order('created_at', { ascending: false });
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     };
 
     const supabase = await createClient();
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('workflow_rules')
       .insert(payload)
       .select('*')
@@ -100,7 +100,7 @@ export async function PATCH(request: Request) {
     }
 
     const supabase = await createClient();
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('workflow_rules')
       .update(dbUpdates)
       .eq('id', id)
@@ -129,7 +129,7 @@ export async function DELETE(request: Request) {
     }
 
     const supabase = await createClient();
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('workflow_rules')
       .delete()
       .eq('id', id);

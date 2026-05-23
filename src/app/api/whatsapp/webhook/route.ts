@@ -42,7 +42,7 @@ export async function POST(request: Request) {
           let leadId = null;
 
           if (phoneNumber) {
-            const { data: leads } = await (supabase as any)
+            const { data: leads } = await supabase
               .from('leads')
               .select('id')
               .or(`phone.ilike.%${phoneNumber.slice(-10)}%`)
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
           }
 
           // Store the inbound message
-          await (supabase as any).from('whatsapp_messages').insert({
+          await supabase.from('whatsapp_messages').insert({
             lead_id: leadId,
             direction: 'inbound',
             message_type: msg?.type === 'image' ? 'image' : msg?.type === 'document' ? 'document' : 'text',

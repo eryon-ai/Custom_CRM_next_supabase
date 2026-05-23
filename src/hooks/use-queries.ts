@@ -17,7 +17,7 @@ async function fetcher<T>(url: string): Promise<T> {
   return res.json();
 }
 
-async function mutator<T>(url: string, method: string, body?: unknown): Promise<T> {
+async function mutator<T>(url: string, method: string, body?: Record<string, unknown>): Promise<T> {
   const res = await fetch(url, {
     method,
     headers: body ? { 'Content-Type': 'application/json' } : undefined,
@@ -51,7 +51,7 @@ export const queryKeys = {
 export function useLeadsQuery() {
   return useQuery({
     queryKey: queryKeys.leads,
-    queryFn: () => fetcher<{ leads: any[] }>('/api/leads'),
+    queryFn: () => fetcher<{ leads: Record<string, unknown>[] }>('/api/leads'),
     staleTime: 30_000,
     gcTime: 5 * 60_000,
     refetchOnMount: false,
@@ -62,7 +62,7 @@ export function useLeadsQuery() {
 export function useLeadQuery(id: string | null) {
   return useQuery({
     queryKey: queryKeys.lead(id || ''),
-    queryFn: () => fetcher<{ lead: any }>(`/api/leads/${id}`),
+    queryFn: () => fetcher<{ lead: Record<string, unknown> }>(`/api/leads/${id}`),
     enabled: !!id,
     staleTime: 30_000,
   });
@@ -72,9 +72,9 @@ export function useCreateLeadMutation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: Record<string, unknown>) =>
-      mutator<{ lead: any }>('/api/leads', 'POST', body),
+      mutator<{ lead: Record<string, unknown> }>('/api/leads', 'POST', body),
     onSuccess: (data) => {
-      qc.setQueryData(queryKeys.leads, (old: any) => ({
+      qc.setQueryData(queryKeys.leads, (old: { leads: Record<string, unknown>[] } | undefined) => ({
         leads: [data.lead, ...(old?.leads || [])],
       }));
     },
@@ -85,10 +85,10 @@ export function useUpdateLeadMutation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, ...body }: { id: string } & Record<string, unknown>) =>
-      mutator<{ lead: any }>(`/api/leads/${id}`, 'PATCH', body),
+      mutator<{ lead: Record<string, unknown> }>(`/api/leads/${id}`, 'PATCH', body),
     onSuccess: (data, vars) => {
-      qc.setQueryData(queryKeys.leads, (old: any) => ({
-        leads: (old?.leads || []).map((l: any) =>
+      qc.setQueryData(queryKeys.leads, (old: { leads: Record<string, unknown>[] } | undefined) => ({
+        leads: (old?.leads || []).map((l: Record<string, unknown>) =>
           l.id === vars.id ? { ...l, ...data.lead } : l
         ),
       }));
@@ -100,7 +100,7 @@ export function useUpdateLeadMutation() {
 export function useAgentsQuery() {
   return useQuery({
     queryKey: queryKeys.agents,
-    queryFn: () => fetcher<{ agents: any[] }>('/api/agents'),
+    queryFn: () => fetcher<{ agents: Record<string, unknown>[] }>('/api/agents'),
     staleTime: 60_000,
     gcTime: 5 * 60_000,
     refetchOnMount: false,
@@ -113,7 +113,7 @@ export function useCreateAgentMutation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: Record<string, unknown>) =>
-      mutator<{ agent: any }>('/api/agents', 'POST', body),
+      mutator<{ agent: Record<string, unknown> }>('/api/agents', 'POST', body),
     onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.agents }),
   });
 }
@@ -122,7 +122,7 @@ export function useCreateAgentMutation() {
 export function useLocationsQuery() {
   return useQuery({
     queryKey: queryKeys.locations,
-    queryFn: () => fetcher<{ locations: any[] }>('/api/locations'),
+    queryFn: () => fetcher<{ locations: Record<string, unknown>[] }>('/api/locations'),
     staleTime: 15_000,
     gcTime: 5 * 60_000,
     refetchOnMount: false,
@@ -134,7 +134,7 @@ export function useLocationsQuery() {
 export function usePipelineQuery() {
   return useQuery({
     queryKey: queryKeys.pipeline,
-    queryFn: () => fetcher<{ leads: any[] }>('/api/pipeline'),
+    queryFn: () => fetcher<{ leads: Record<string, unknown>[] }>('/api/pipeline'),
     staleTime: 30_000,
     gcTime: 5 * 60_000,
     refetchOnMount: false,
@@ -146,7 +146,7 @@ export function usePipelineQuery() {
 export function useQuotationsQuery() {
   return useQuery({
     queryKey: queryKeys.quotations,
-    queryFn: () => fetcher<{ quotations: any[] }>('/api/quotations'),
+    queryFn: () => fetcher<{ quotations: Record<string, unknown>[] }>('/api/quotations'),
     staleTime: 30_000,
     gcTime: 5 * 60_000,
     refetchOnMount: false,
@@ -158,7 +158,7 @@ export function useCreateQuotationMutation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: Record<string, unknown>) =>
-      mutator<{ quotation: any }>('/api/quotations', 'POST', body),
+      mutator<{ quotation: Record<string, unknown> }>('/api/quotations', 'POST', body),
     onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.quotations }),
   });
 }
@@ -175,7 +175,7 @@ export function useUpdateQuotationMutation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: { id: string } & Record<string, unknown>) =>
-      mutator<{ quotation: any }>('/api/quotations', 'PATCH', body),
+      mutator<{ quotation: Record<string, unknown> }>('/api/quotations', 'PATCH', body),
     onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.quotations }),
   });
 }
@@ -184,7 +184,7 @@ export function useUpdateQuotationMutation() {
 export function useInventoryQuery() {
   return useQuery({
     queryKey: queryKeys.inventory,
-    queryFn: () => fetcher<{ items: any[] }>('/api/inventory'),
+    queryFn: () => fetcher<{ items: Record<string, unknown>[] }>('/api/inventory'),
     staleTime: 60_000,
     gcTime: 5 * 60_000,
     refetchOnMount: false,
@@ -196,7 +196,7 @@ export function useCreateInventoryMutation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: Record<string, unknown>) =>
-      mutator<{ item: any }>('/api/inventory', 'POST', body),
+      mutator<{ item: Record<string, unknown> }>('/api/inventory', 'POST', body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.inventory });
       qc.invalidateQueries({ queryKey: queryKeys.dashboardStats });
@@ -221,7 +221,7 @@ export function useUpdateInventoryMutation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: { id: string } & Record<string, unknown>) =>
-      mutator<{ item: any }>('/api/inventory', 'PATCH', body),
+      mutator<{ item: Record<string, unknown> }>('/api/inventory', 'PATCH', body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.inventory });
       qc.invalidateQueries({ queryKey: queryKeys.dashboardStats });
@@ -234,7 +234,7 @@ export function useUpdateInventoryMutation() {
 export function useAnalyticsQuery(period = '6m') {
   return useQuery({
     queryKey: queryKeys.analytics(period),
-    queryFn: () => fetcher<any>(`/api/analytics?period=${period}`),
+    queryFn: () => fetcher<Record<string, unknown>>(`/api/analytics?period=${period}`),
     staleTime: 2 * 60_000,
     gcTime: 10 * 60_000,
     refetchOnMount: false,
@@ -246,7 +246,7 @@ export function useAnalyticsQuery(period = '6m') {
 export function useWorkflowQuery() {
   return useQuery({
     queryKey: queryKeys.workflow,
-    queryFn: () => fetcher<{ rules: any[] }>('/api/workflow'),
+    queryFn: () => fetcher<{ rules: Record<string, unknown>[] }>('/api/workflow'),
     staleTime: 60_000,
     gcTime: 5 * 60_000,
     refetchOnMount: false,
