@@ -1,0 +1,59 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e5]:
+        - generic [ref=e6]: Marble Mart
+        - generic [ref=e7]: CRM
+      - navigation [ref=e11]:
+        - link "Dashboard" [ref=e12] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e13] [cursor=pointer]
+          - generic [ref=e18] [cursor=pointer]: Dashboard
+        - link "Pipeline" [ref=e19] [cursor=pointer]:
+          - /url: /dashboard/pipeline
+          - img [ref=e20] [cursor=pointer]
+          - generic [ref=e21] [cursor=pointer]: Pipeline
+        - link "Marble Catalog" [ref=e22] [cursor=pointer]:
+          - /url: /dashboard/marble-catalog
+          - img [ref=e23] [cursor=pointer]
+          - generic [ref=e26] [cursor=pointer]: Marble Catalog
+        - link "Field Operations" [ref=e27] [cursor=pointer]:
+          - /url: /dashboard/field-ops
+          - img [ref=e28] [cursor=pointer]
+          - generic [ref=e31] [cursor=pointer]: Field Operations
+        - link "Quotations" [ref=e32] [cursor=pointer]:
+          - /url: /dashboard/quotations
+          - img [ref=e33] [cursor=pointer]
+          - generic [ref=e36] [cursor=pointer]: Quotations
+        - link "Inventory" [ref=e37] [cursor=pointer]:
+          - /url: /dashboard/inventory
+          - img [ref=e38] [cursor=pointer]
+          - generic [ref=e42] [cursor=pointer]: Inventory
+        - link "Analytics" [ref=e43] [cursor=pointer]:
+          - /url: /dashboard/analytics
+          - img [ref=e44] [cursor=pointer]
+          - generic [ref=e46] [cursor=pointer]: Analytics
+        - link "Reports" [ref=e47] [cursor=pointer]:
+          - /url: /dashboard/reports
+          - img [ref=e48] [cursor=pointer]
+          - generic [ref=e51] [cursor=pointer]: Reports
+        - link "Settings" [ref=e52] [cursor=pointer]:
+          - /url: /dashboard/settings
+          - img [ref=e53] [cursor=pointer]
+          - generic [ref=e56] [cursor=pointer]: Settings
+      - button "AI Assistant" [ref=e58] [cursor=pointer]:
+        - img [ref=e59] [cursor=pointer]
+        - generic [ref=e62] [cursor=pointer]: AI Assistant
+      - button "Dark Mode" [ref=e64] [cursor=pointer]:
+        - img [ref=e65] [cursor=pointer]
+        - generic [ref=e67] [cursor=pointer]: Dark Mode
+      - button [ref=e70] [cursor=pointer]:
+        - img [ref=e71] [cursor=pointer]
+      - button [ref=e74] [cursor=pointer]:
+        - img [ref=e75] [cursor=pointer]
+    - main [ref=e77]
+  - region "Notifications alt+T"
+```
