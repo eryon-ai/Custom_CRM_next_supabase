@@ -20,7 +20,7 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-svh">
       {/* ── Left Panel: Branding + Illustration (desktop only) ── */}
       <div className="hidden lg:flex lg:w-[46%] xl:w-[44%] relative overflow-hidden bg-gradient-to-br from-stone-800 via-stone-900 to-stone-950">
         {/* Marble vein SVG */}
@@ -78,9 +78,9 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
       </div>
 
       {/* ── Right Panel: Form ── */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-8 lg:p-12 bg-gradient-to-br from-stone-50 via-white to-amber-50/20">
+      <div className="flex-1 flex items-center justify-center pt-16 pb-8 px-4 sm:pt-8 sm:p-8 lg:p-12 bg-gradient-to-br from-stone-50 via-white to-amber-50/20">
         {/* Mobile-only logo */}
-        <div className="lg:hidden absolute top-6 left-6 flex items-center gap-2.5">
+        <div className="lg:hidden absolute top-4 left-4 sm:top-6 sm:left-6 flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
             <Gem className="w-4 h-4 text-stone-900" />
           </div>
@@ -89,7 +89,7 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
 
         <div className={`w-full max-w-[420px] transition-opacity duration-300 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
           {/* Card */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_2px_24px_rgba(0,0,0,0.04),0_0_0_1px_rgba(0,0,0,0.02)] border border-stone-200/60 p-8 sm:p-10">
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_2px_24px_rgba(0,0,0,0.04),0_0_0_1px_rgba(0,0,0,0.02)] border border-stone-200/60 p-6 sm:p-8 lg:p-10">
             <div className="mb-8">
               <h1 className="text-2xl font-bold tracking-tight text-stone-900">{title}</h1>
               <p className="text-sm text-stone-500 mt-1.5">{subtitle}</p>
