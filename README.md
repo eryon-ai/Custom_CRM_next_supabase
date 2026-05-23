@@ -460,7 +460,7 @@ https://your-app.vercel.app/**
 
 ## License
 
-Private — Marble Mart CRM. All rights reserved.
+Private — EryonAI solutions. All rights reserved.
 
 ---
 
